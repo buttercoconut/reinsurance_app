@@ -1,17 +1,21 @@
 from pydantic import BaseModel, Field
-from datetime import datetime
+from datetime import date
+from typing import Optional
 
-class ContractCreate(BaseModel):
-    insurer_name: str
+class ContractBase(BaseModel):
     reinsurer_name: str
+    primary_insurer_name: str
+    effective_date: date
+    expiry_date: date
     premium: float
     risk_limit: float
-    start_date: datetime
-    end_date: datetime
 
-class ContractOut(ContractCreate):
+class ContractCreate(ContractBase):
+    pass
+
+class Contract(ContractBase):
     id: int
-    status: str = Field(default="active")
+    status: str
 
     class Config:
         orm_mode = True

@@ -1,48 +1,32 @@
 <template>
   <div>
-    <h2>Risk Assessment</h2>
-    <canvas id="riskChart" ref="chartCanvas"></canvas>
+    <h2>Risk Assessment Chart</h2>
+    <canvas id="riskChart" width="400" height="200"></canvas>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import Chart from 'chart.js/auto';
+import { onMounted } from 'vue';
+import { Chart, registerables } from 'chart.js';
+Chart.register(...registerables);
 
-const chartCanvas = ref(null);
-const chartInstance = ref(null);
-
-const fetchRiskData = async () => {
-  try {
-    const response = await fetch('/api/risk');
-    const data = await response.json();
-    return data;
-  } catch (err) {
-    console.error('Error fetching risk data', err);
-    return [];
-  }
-};
-
-const renderChart = (data) => {
-  if (chartInstance.value) chartInstance.value.destroy();
-  chartInstance.value = new Chart(chartCanvas.value, {
+const createChart = () => {
+  const ctx = document.getElementById('riskChart').getContext('2d');
+  new Chart(ctx, {
     type: 'bar',
     data: {
-      labels: data.map(d => d.name),
+      labels: ['Risk A', 'Risk B', 'Risk C'],
       datasets: [{
-        label: 'Risk Score',
-        data: data.map(d => d.score),
-        backgroundColor: 'rgba(54, 162, 235, 0.6)',
-      }],
+        label: 'Exposure',
+        data: [120, 80, 150],
+        backgroundColor: ['#ff6384', '#36a2eb', '#ffce56']
+      }]
     },
-    options: { responsive: true },
+    options: { responsive: true }
   });
 };
 
-onMounted(async () => {
-  const data = await fetchRiskData();
-  renderChart(data);
-});
+onMounted(createChart);
 </script>
 
 <style scoped>

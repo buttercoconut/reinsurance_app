@@ -1,22 +1,21 @@
 <template>
   <div>
-    <h2>Claim Submission</h2>
+    <h2>Submit a Claim</h2>
     <form @submit.prevent="submitClaim">
-      <div class="form-group">
-        <label for="policyId">Policy ID</label>
-        <input v-model="form.policyId" id="policyId" type="text" required />
+      <div>
+        <label for="contractId">Contract ID:</label>
+        <input id="contractId" v-model="form.contractId" required />
       </div>
-      <div class="form-group">
-        <label for="claimAmount">Claim Amount</label>
-        <input v-model.number="form.claimAmount" id="claimAmount" type="number" required />
+      <div>
+        <label for="amount">Amount:</label>
+        <input id="amount" type="number" v-model="form.amount" required />
       </div>
-      <div class="form-group">
-        <label for="description">Description</label>
-        <textarea v-model="form.description" id="description" required></textarea>
+      <div>
+        <label for="description">Description:</label>
+        <textarea id="description" v-model="form.description" required></textarea>
       </div>
-      <button type="submit">Submit Claim</button>
+      <button type="submit">Submit</button>
     </form>
-    <p v-if="message" :class="{ success: success, error: !success }">{{ message }}</p>
   </div>
 </template>
 
@@ -25,56 +24,47 @@ import { ref } from 'vue';
 import axios from 'axios';
 
 const form = ref({
-  policyId: '',
-  claimAmount: 0,
-  description: '',
+  contractId: '',
+  amount: 0,
+  description: ''
 });
-const message = ref('');
-const success = ref(false);
 
 const submitClaim = async () => {
   try {
-    const response = await axios.post('/api/claims', form.value);
-    message.value = 'Claim submitted successfully! ID: ' + response.data.id;
-    success.value = true;
-    form.value = { policyId: '', claimAmount: 0, description: '' };
+    await axios.post('/api/claims', form.value);
+    alert('Claim submitted successfully');
+    form.value = { contractId: '', amount: 0, description: '' };
   } catch (err) {
-    message.value = 'Error submitting claim: ' + err.message;
-    success.value = false;
+    console.error('Error submitting claim', err);
+    alert('Failed to submit claim');
   }
 };
 </script>
 
 <style scoped>
-.form-group {
-  margin-bottom: 1rem;
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 label {
-  display: block;
-  margin-bottom: 0.5rem;
+  font-weight: bold;
 }
-input,
-textarea {
-  width: 100%;
+input, textarea {
   padding: 0.5rem;
   border: 1px solid #ccc;
   border-radius: 4px;
 }
 button {
+  width: fit-content;
   padding: 0.5rem 1rem;
-  background-color: #28a745;
+  background-color: #42b983;
   color: white;
   border: none;
   border-radius: 4px;
   cursor: pointer;
 }
 button:hover {
-  background-color: #218838;
-}
-.success {
-  color: green;
-}
-.error {
-  color: red;
+  background-color: #369870;
 }
 </style>
